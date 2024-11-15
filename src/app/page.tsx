@@ -114,25 +114,6 @@ export default function Home() {
     <div className={styles.page}>
       <main className={styles.main}>
         <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => handleClick("/api/remoteAttestation")}
-          >
-            Remote Attestation
-          </a>
-          <a
-            className={styles.primary}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => handleClick("/api/account/address")}
-          >
-            TEE Account
-          </a>
-        </div>
-
-        <div className={styles.ctas}>
           <input
             type="text"
             value={tweetId}
