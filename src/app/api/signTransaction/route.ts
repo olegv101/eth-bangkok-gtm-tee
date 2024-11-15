@@ -10,6 +10,8 @@ import {
 } from "viem";
 import { baseSepolia } from "viem/chains";
 import superjson from "superjson";
+import { getChain } from "./chains";
+import { bountyABI, bountyAddress } from "./Bounty";
 
 const endpoint =
   process.env.DSTACK_SIMULATOR_ENDPOINT || "http://localhost:8090";
@@ -117,9 +119,10 @@ async function getViewCount(tweetId: string) {
 }
 
 export async function GET(request: Request) {
-  console.log("hi");
   const { searchParams } = new URL(request.url);
   const tweetId = searchParams.get("tweetId");
+  const chainId = searchParams.get("chainId");
+  const chain = getChain(Number(chainId));
 
   if (!tweetId) {
     return Response.json({ error: "Tweet ID is required" }, { status: 400 });
@@ -133,21 +136,22 @@ export async function GET(request: Request) {
 
     console.log(endpoint);
     const publicClient = createPublicClient({
-      chain: baseSepolia,
+      chain: chain,
       transport: http(),
     });
     const walletClient = createWalletClient({
-      chain: baseSepolia,
+      chain: chain,
       transport: http(),
     });
     const client = new TappdClient(endpoint);
     const testDeriveKey = await client.deriveKey("/", "test");
     const keccakPrivateKey = keccak256(testDeriveKey.asUint8Array());
-    const account = privateKeyToAccount(keccakPrivateKey);
-    const to = "0xC5227Cb20493b97bb02fADb20360fe28F52E2eff";
+    const account = privateKeyToAccount(
+      "0x706a53a82bb959329274f028b19239ccc00cb040f13df41c0ce530560aae1996"
+    );
     let result = {
       derivedPublicKey: account.address,
-      to,
+      to: bountyAddress[Number(chainId)],
       gweiAmount,
       hash: "",
       receipt: {},
@@ -155,14 +159,18 @@ export async function GET(request: Request) {
       viewCount,
     };
     console.log(
-      `Sending Transaction with Account ${account.address} to ${to} for ${gweiAmount} gwei`
+      `Sending Transaction with Account ${account.address} to ${
+        bountyAddress[Number(chainId)]
+      } for ${gweiAmount} gwei`
     );
     try {
       // @ts-ignore
-      const hash = await walletClient.sendTransaction({
+      const hash = await walletClient.writeContract({
         account,
-        to,
-        value: parseGwei(`${gweiAmount}`),
+        address: bountyAddress[Number(chainId)],
+        abi: bountyABI,
+        functionName: "verifyTweet",
+        args: [tweetId, viewCount],
       });
       console.log(`Transaction Hash: ${hash}`);
       const receipt = await publicClient.waitForTransactionReceipt({ hash });

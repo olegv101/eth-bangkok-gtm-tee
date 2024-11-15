@@ -5,6 +5,7 @@ import styles from "./page.module.css";
 import React, { useState } from "react";
 import "dotenv/config";
 import FormData from "form-data";
+import { supportedNetworks } from "./api/signTransaction/chains";
 
 function hexToUint8Array(hex: string) {
   hex = hex.trim();
@@ -55,6 +56,7 @@ async function uploadUint8Array(data: Uint8Array) {
 export default function Home() {
   const [result, setResult] = useState<string | null>(null);
   const [tweetId, setTweetId] = useState<string>("");
+  const [chainId, setChainId] = useState<string>("");
 
   // Define the function to be called on button click
   const handleClick = async (path: string) => {
@@ -81,7 +83,9 @@ export default function Home() {
             return;
           }
           response = await fetch(
-            `${path}?tweetId=${encodeURIComponent(tweetId)}`
+            `${path}?tweetId=${encodeURIComponent(
+              tweetId
+            )}&chainId=${encodeURIComponent(chainId)}`
           );
         } else {
           response = await fetch(path);
@@ -117,7 +121,12 @@ export default function Home() {
           <input
             type="text"
             value={tweetId}
-            onChange={(e) => setTweetId(e.target.value)}
+            onChange={(e) => {
+              // Extract tweet ID from full URL if present
+              const value = e.target.value;
+              const match = value.match(/status\/(\d+)/);
+              setTweetId(match ? match[1] : value);
+            }}
             placeholder="Enter Tweet ID"
             style={{
               padding: "8px",
@@ -126,6 +135,23 @@ export default function Home() {
               border: "1px solid #ccc",
             }}
           />
+          <select
+            value={chainId}
+            onChange={(e) => setChainId(e.target.value)}
+            style={{
+              padding: "8px",
+              marginRight: "10px",
+              borderRadius: "4px",
+              border: "1px solid #ccc",
+            }}
+          >
+            <option value="">Select Chain</option>
+            {supportedNetworks.map((chain) => (
+              <option key={chain.id} value={chain.id}>
+                {chain.name} ({chain.id})
+              </option>
+            ))}
+          </select>
           <a
             className={styles.secondary}
             target="_blank"
