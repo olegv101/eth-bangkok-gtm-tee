@@ -11,6 +11,17 @@ const endpoint =
 
 export const dynamic = "force-dynamic";
 
+const findTweetText = (data: any): string => {
+  try {
+    const res =
+      data.data.threaded_conversation_with_injections_v2.instructions[0]
+        .entries[0].content.itemContent.tweet_results.result.legacy.full_text;
+    return res;
+  } catch (e) {
+    return "";
+  }
+};
+
 const findViewCount = (data: any): number => {
   if (typeof data === "object" && data !== null) {
     for (const key in data) {
@@ -27,7 +38,37 @@ const findViewCount = (data: any): number => {
   return 0; // Return 0 in base case
 };
 
-async function getViewCount(tweetId: string) {
+const findMultiplier = async (data: any, keyword: string): Promise<number> => {
+  const tweetText = findTweetText(data);
+  console.log(`Tweet Text: ${tweetText}`);
+
+  const response = await fetch("https://api.red-pill.ai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization:
+        "Bearer sk-Zxkp30MdyOkjf3AzLXoTRlGtq3pF2LKCO3x4x01NDavyqD9G",
+    },
+    body: JSON.stringify({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "user",
+          content: `Return a score between 0 and 10 that corresponds to the number of times ${keyword} was mentioned in the following tweet. If there are one or more mentions, return a 1, otherwise return a number corresponding to how closely the tweet has to do with ${keyword} even though it does not specifically mention his name. Here is the tweet: ${tweetText}`,
+        },
+      ],
+      temperature: 1,
+    }),
+  });
+
+  const result = await response.json();
+  const score = parseFloat(
+    result.choices[0].message.content.match(/\d+(\.\d+)?/)?.[0] || "0"
+  );
+  return score;
+};
+
+async function getViewCount(tweetId: string, keyword: string) {
   const apiResponse = await fetch(
     `https://x.com/i/api/graphql/nBS-WpgA6ZG0CyNHD517JQ/TweetDetail?variables=${encodeURIComponent(
       JSON.stringify({
@@ -108,26 +149,50 @@ async function getViewCount(tweetId: string) {
     }
   );
   const data = await apiResponse.json();
-  return Number(findViewCount(data));
+  const multiplier = await findMultiplier(data, keyword);
+  const viewCount = Number(findViewCount(data));
+  console.log(`Multiplier: ${multiplier}`);
+  console.log(`View Count: ${viewCount}`);
+  return viewCount * multiplier;
 }
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const tweetId = searchParams.get("tweetId");
   const chainId = searchParams.get("chainId");
-  const chain = getChain(Number(chainId));
+  const keyword = searchParams.get("keyword");
+  console.log(`Tweet ID: ${tweetId}`);
+  console.log(`Chain ID: ${chainId}`);
+  console.log(`Keyword: ${keyword}`);
 
-  if (!tweetId) {
-    return Response.json({ error: "Tweet ID is required" }, { status: 400 });
+  if (!tweetId || !chainId || !keyword) {
+    return Response.json(
+      { error: "Tweet ID, Chain ID, and keyword are required" },
+      { status: 400 }
+    );
+  }
+
+  const chain = getChain(Number(chainId));
+  if (!chain) {
+    return Response.json(
+      { error: "Invalid or unsupported chain ID" },
+      { status: 400 }
+    );
   }
 
   try {
-    const viewCount = await getViewCount(tweetId!);
+    const viewCount = await getViewCount(tweetId, keyword);
     console.log(`Tweet ${tweetId} view count:`, viewCount);
 
     const gweiAmount = viewCount;
+    const bountyAddr = bountyAddress[Number(chainId)];
 
-    console.log(endpoint);
+    if (!bountyAddr) {
+      return Response.json(
+        { error: "No bounty address configured for this chain" },
+        { status: 400 }
+      );
+    }
     const publicClient = createPublicClient({
       chain: chain,
       transport: http(),
@@ -144,7 +209,7 @@ export async function GET(request: Request) {
     );
     let result = {
       derivedPublicKey: account.address,
-      to: bountyAddress[Number(chainId)],
+      to: bountyAddr,
       gweiAmount,
       hash: "",
       receipt: {},
@@ -152,15 +217,13 @@ export async function GET(request: Request) {
       viewCount,
     };
     console.log(
-      `Sending Transaction with Account ${account.address} to ${
-        bountyAddress[Number(chainId)]
-      } for ${gweiAmount} gwei`
+      `Sending Transaction with Account ${account.address} to ${bountyAddr} for ${gweiAmount} gwei`
     );
     try {
       // @ts-ignore
       const hash = await walletClient.writeContract({
         account,
-        address: bountyAddress[Number(chainId)],
+        address: bountyAddr,
         abi: bountyABI,
         functionName: "verifyTweet",
         args: [tweetId, viewCount],

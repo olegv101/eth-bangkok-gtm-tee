@@ -57,6 +57,7 @@ export default function Home() {
   const [result, setResult] = useState<string | null>(null);
   const [tweetId, setTweetId] = useState<string>("");
   const [chainId, setChainId] = useState<string>("");
+  const [keyword, setKeyword] = useState<string>("");
 
   const handleClick = async (path: string) => {
     try {
@@ -85,6 +86,11 @@ export default function Home() {
             return;
           }
 
+          if (!keyword.trim()) {
+            setResult("Error: Keyword is required");
+            return;
+          }
+
           const match = tweetId.match(/status\/(\d+)/);
           const extractedTweetId = match ? match[1] : tweetId.trim();
 
@@ -93,7 +99,7 @@ export default function Home() {
           response = await fetch(
             `${path}?tweetId=${encodeURIComponent(
               extractedTweetId
-            )}&chainId=${encodeURIComponent(chainId)}`,
+            )}&chainId=${encodeURIComponent(chainId)}&keyword=${encodeURIComponent(keyword)}`,
             {
               method: 'GET',
               headers: {
@@ -136,6 +142,20 @@ export default function Home() {
               fontSize: "16px",
             }}
           />
+          <input
+            type="text"
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            placeholder="Enter keyword to search for in tweet"
+            style={{
+              padding: "12px",
+              marginBottom: "15px",
+              borderRadius: "4px",
+              border: "1px solid #ccc",
+              width: "800px",
+              fontSize: "16px",
+            }}
+          />
           <select
             value={chainId}
             onChange={(e) => setChainId(e.target.value)}
@@ -144,7 +164,7 @@ export default function Home() {
               marginBottom: "15px",
               borderRadius: "4px",
               border: "1px solid #ccc",
-              width: "800px", // Made wider
+              width: "800px",
               fontSize: "16px",
             }}
           >
