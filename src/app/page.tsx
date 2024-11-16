@@ -58,7 +58,6 @@ export default function Home() {
   const [tweetId, setTweetId] = useState<string>("");
   const [chainId, setChainId] = useState<string>("");
 
-  // Define the function to be called on button click
   const handleClick = async (path: string) => {
     console.log("handleClick");
     try {
@@ -77,14 +76,17 @@ export default function Home() {
         setResult(JSON.stringify(data, null, 2)); // Pretty print JSON
       } else {
         if (path === "/api/signTransaction") {
-          console.log("Tweet ID:", tweetId);
-          if (!tweetId) {
+          const match = tweetId.match(/status\/(\d+)/);
+          const extractedTweetId = match ? match[1] : tweetId;
+
+          console.log("Tweet ID:", extractedTweetId);
+          if (!extractedTweetId) {
             setResult("Error: Tweet ID is required");
             return;
           }
           response = await fetch(
             `${path}?tweetId=${encodeURIComponent(
-              tweetId
+              extractedTweetId
             )}&chainId=${encodeURIComponent(chainId)}`
           );
         } else {
@@ -121,32 +123,31 @@ export default function Home() {
           <input
             type="text"
             value={tweetId}
-            onChange={(e) => {
-              // Extract tweet ID from full URL if present
-              const value = e.target.value;
-              const match = value.match(/status\/(\d+)/);
-              setTweetId(match ? match[1] : value);
-            }}
-            placeholder="Enter Tweet ID"
+            onChange={(e) => setTweetId(e.target.value)}
+            placeholder="Enter Tweet ID or URL"
             style={{
-              padding: "8px",
-              marginRight: "10px",
+              padding: "12px",
+              marginBottom: "15px",
               borderRadius: "4px",
               border: "1px solid #ccc",
+              width: "800px",
+              fontSize: "16px",
             }}
           />
           <select
             value={chainId}
             onChange={(e) => setChainId(e.target.value)}
             style={{
-              padding: "8px",
-              marginRight: "10px",
+              padding: "12px",
+              marginBottom: "15px",
               borderRadius: "4px",
               border: "1px solid #ccc",
+              width: "800px", // Made wider
+              fontSize: "16px",
             }}
           >
             <option value="">Select Chain</option>
-            {supportedNetworks.map((chain) => (
+            {supportedNetworks.map((chain: any) => (
               <option key={chain.id} value={chain.id}>
                 {chain.name} ({chain.id})
               </option>
@@ -158,7 +159,7 @@ export default function Home() {
             rel="noopener noreferrer"
             onClick={() => handleClick("/api/signTransaction")}
           >
-            Sign Transaction
+            Verify Tweet
           </a>
         </div>
       </main>

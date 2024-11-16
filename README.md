@@ -29,6 +29,5 @@ To make sure everything works
 - Grab a tweet id from twitter, ie `1582121408548651009` from https://x.com/ParadigmEng420/status/1582121408548651009
 - Enter it hit sign transaction
 - check the logs of docker, it should give some accurate tweet view count, ignore the rest
-
 - it should look something like this:
 https://app.warp.dev/block/pPDCeaUu2Efx454vIOxYSq

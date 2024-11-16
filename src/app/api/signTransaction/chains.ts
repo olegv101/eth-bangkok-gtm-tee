@@ -1,5 +1,12 @@
 import { baseSepolia } from "viem/chains";
 import { createPublicClient, defineChain, Hex, http } from "viem";
+import { privateKeyToAccount } from "viem/accounts";
+
+export const DEFAULT_CHAIN = baseSepolia;
+
+export const account = privateKeyToAccount(
+  process.env.NEXT_PUBLIC_PRIVATE_KEY as Hex
+);
 
 export const getPublicClient = (chainId: number) => {
   return createPublicClient({ chain: getChain(chainId), transport: http() });
@@ -8,126 +15,84 @@ export const getPublicClient = (chainId: number) => {
 export const getChain = (chainId: number) => {
   return supportedNetworks.find((chain) => chain.id == chainId);
 };
-
-export const gnosis = defineChain({
-  id: 100,
-  name: "Gnosis",
+// not deployed
+export const bitKubTestnet = defineChain({
+  id: 25925,
+  name: "BitKub Testnet",
   rpcUrls: {
-    default: { http: ["https://rpc.gnosischain.com"] },
-    public: { http: ["https://rpc.gnosischain.com"] },
-  },
-  nativeCurrency: {
-    decimals: 18,
-    name: "Gnosis",
-    symbol: "XDAI",
-  },
-});
-
-export const skale = defineChain({
-  id: 974399131,
-  name: "Skale Calypso Hub Testnet",
-  rpcUrls: {
-    default: {
-      http: ["https://testnet.skalenodes.com/v1/giant-half-dual-testnet"],
-    },
-    public: {
-      http: ["https://testnet.skalenodes.com/v1/giant-half-dual-testnet"],
-    },
+    default: { http: ["https://rpc-testnet.bitkubchain.io"] },
+    public: { http: ["https://rpc-testnet.bitkubchain.io"] },
   },
   blockExplorers: {
     default: {
-      name: "Skale Explorer",
-      url: "https://giant-half-dual-testnet.explorer.testnet.skalenodes.com",
+      name: "BitKub",
+      url: "https://testnet.bkcscan.com/",
     },
   },
   nativeCurrency: {
     decimals: 18,
-    name: "sFuel",
-    symbol: "SFUEL",
+    name: "KUB",
+    symbol: "KUB",
   },
 });
-
-export const unichain = defineChain({
-  id: 1301,
-  name: "Unichain Sepolia",
+export const celoTestnet = defineChain({
+  id: 44787,
+  name: "Celo Testnet",
   rpcUrls: {
-    default: { http: ["https://sepolia.unichain.org"] },
-    public: { http: ["https://sepolia.unichain.org"] },
+    default: { http: ["https://alfajores-forno.celo-testnet.org"] },
+    public: { http: ["https://alfajores-forno.celo-testnet.org"] },
   },
   blockExplorers: {
     default: {
-      name: "Uniscan",
-      url: "https://sepolia.uniscan.xyz/",
+      name: "Celo alfajores",
+      url: "https://celo-alfajores.blockscout.com/",
     },
   },
   nativeCurrency: {
     decimals: 18,
-    name: "Ether",
-    symbol: "ETH",
+    name: "Celo",
+    symbol: "CELO",
   },
 });
-export const polygonZkEvm = defineChain({
-  id: 80002,
-  name: "Polygon zkEVM",
+//not deployed
+export const chilizTestnet = defineChain({
+  id: 88882,
+  name: "Chiliz Testnet",
   rpcUrls: {
-    default: { http: ["https://rpc-amoy.polygon.technology/"] },
-    public: { http: ["https://rpc-amoy.polygon.technology/"] },
+    default: { http: ["https://spicy-rpc.chiliz.com/"] },
+    public: { http: ["https://spicy-rpc.chiliz.com/"] },
   },
   blockExplorers: {
     default: {
-      name: "PolygonScan",
-      url: "https://cardona-zkevm.polygonscan.com/",
+      name: "Chiliz",
+      url: "https://testnet.chiliscan.com/",
     },
   },
   nativeCurrency: {
     decimals: 18,
-    name: "Polygon",
-    symbol: "POL",
+    name: "CHZ",
+    symbol: "CHZ",
   },
 });
-export const storyPublic = defineChain({
-  id: 1513,
-  name: "Story Public",
+export const fhenixTestnet = defineChain({
+  id: 8008135,
+  name: "Fhenix",
   rpcUrls: {
-    default: { http: ["https://testnet.storyrpc.io/"] },
-    public: { http: ["https://testnet.storyrpc.io/"] },
+    default: { http: ["https://api.helium.fhenix.zone/"] },
+    public: { http: ["https://api.helium.fhenix.zone/"] },
   },
   blockExplorers: {
     default: {
-      name: "StoryScan",
-      url: "https://testnet.storyscan.xyz/",
+      name: "Fhenix Explorer",
+      url: "https://explorer.helium.fhenix.zone/",
     },
   },
   nativeCurrency: {
     decimals: 18,
-    name: "Story",
-    symbol: "IP",
+    name: "Test Fhenix",
+    symbol: "tFHE",
   },
 });
-
-export const airDAO = defineChain({
-  id: 22040,
-  name: "AirDAO",
-  rpcUrls: {
-    default: { http: ["https://testnet-rpc.airdao.io/"] },
-    public: { http: ["https://testnet-rpc.airdao.io/"] },
-  },
-  blockExplorers: {
-    default: {
-      name: "AirDAO Explorer",
-      url: "https://testnet.airdao.io/explorer/",
-    },
-  },
-  gasPrice: {
-    multiplier: 1.2,
-  },
-  nativeCurrency: {
-    decimals: 18,
-    name: "Ambrosus",
-    symbol: "AMB",
-  },
-});
-
 export const flow = defineChain({
   id: 545,
   name: "Flow",
@@ -138,7 +103,7 @@ export const flow = defineChain({
   blockExplorers: {
     default: {
       name: "FlowDiver",
-      url: "https://testnet.flowdiver.io/",
+      url: "https://evm-testnet.flowscan.io/",
     },
   },
   nativeCurrency: {
@@ -147,7 +112,7 @@ export const flow = defineChain({
     symbol: "FLOW",
   },
 });
-
+// not deployed
 export const hederaTestnet = defineChain({
   id: 296,
   name: "Hedera EVM Testnet",
@@ -167,24 +132,81 @@ export const hederaTestnet = defineChain({
     symbol: "HBAR",
   },
 });
-
-export const zircuitTestnet = defineChain({
-  id: 48899,
-  name: "Zircuit Testnet",
+export const incoTestnet = defineChain({
+  id: 21097,
+  name: "Inco Testnet",
   rpcUrls: {
-    default: { http: ["https://zircuit1-testnet.p2pify.com"] },
-    public: { http: ["https://zircuit1-testnet.p2pify.com"] },
+    default: { http: ["https://validator.rivest.inco.org/"] },
+    public: { http: ["https://validator.rivest.inco.org/"] },
   },
   blockExplorers: {
     default: {
-      name: "Zircuit Explorer",
-      url: "https://explorer.testnet.zircuit.com/",
+      name: "Inco",
+      url: "https://explorer.rivest.inco.org/",
     },
   },
   nativeCurrency: {
     decimals: 18,
-    name: "Ethereum",
+    name: "INCO",
+    symbol: "INCO",
+  },
+});
+// not deployed
+export const kintoTestnet = defineChain({
+  id: 25925,
+  name: "BitKub Testnet",
+  rpcUrls: {
+    default: { http: ["https://rpc-testnet.bitkubchain.io"] },
+    public: { http: ["https://rpc-testnet.bitkubchain.io"] },
+  },
+  blockExplorers: {
+    default: {
+      name: "BitKub",
+      url: "https://testnet.bkcscan.com/",
+    },
+  },
+  nativeCurrency: {
+    decimals: 18,
+    name: "KUB",
+    symbol: "KUB",
+  },
+});
+export const lineaTestnet = defineChain({
+  id: 59141,
+  name: "Linea Testnet",
+  rpcUrls: {
+    default: { http: ["https://rpc.sepolia.linea.build"] },
+    public: { http: ["https://rpc.sepolia.linea.build"] },
+  },
+  blockExplorers: {
+    default: {
+      name: "Linea",
+      url: "https://explorer.sepolia.linea.build/",
+    },
+  },
+  nativeCurrency: {
+    decimals: 18,
+    name: "Linea",
     symbol: "ETH",
+  },
+});
+export const mantleTestnet = defineChain({
+  id: 5003,
+  name: "Mantle Testnet",
+  rpcUrls: {
+    default: { http: ["https://rpc.sepolia.mantle.xyz"] },
+    public: { http: ["https://rpc.sepolia.mantle.xyz"] },
+  },
+  blockExplorers: {
+    default: {
+      name: "Mantle",
+      url: "https://explorer.sepolia.mantle.xyz/",
+    },
+  },
+  nativeCurrency: {
+    decimals: 18,
+    name: "MNT",
+    symbol: "MNT",
   },
 });
 export const morphHoleskyTestnet = defineChain({
@@ -206,40 +228,181 @@ export const morphHoleskyTestnet = defineChain({
     symbol: "ETH",
   },
 });
-
-export const fhenixTestnet = defineChain({
-  id: 8008135,
-  name: "Fhenix",
+export const neonTestnet = defineChain({
+  id: 245022926,
+  name: "Neon Testnet",
   rpcUrls: {
-    default: { http: ["https://api.helium.fhenix.zone/"] },
-    public: { http: ["https://api.helium.fhenix.zone/"] },
+    default: { http: ["https://devnet.neonevm.org"] },
+    public: { http: ["https://devnet.neonevm.org"] },
   },
   blockExplorers: {
     default: {
-      name: "Fhenix Explorer",
-      url: "https://explorer.helium.fhenix.zone/",
+      name: "Neon",
+      url: "https://neon-devnet.blockscout.com/",
     },
   },
   nativeCurrency: {
     decimals: 18,
-    name: "Test Fhenix",
-    symbol: "tFHE",
+    name: "Neon",
+    symbol: "NEON",
+  },
+});
+export const oasisTestnet = defineChain({
+  id: 23295,
+  name: "Oasis Sapphire",
+  rpcUrls: {
+    default: { http: ["https://testnet.sapphire.oasis.io"] },
+    public: { http: ["https://testnet.sapphire.oasis.io"] },
+  },
+  blockExplorers: {
+    default: {
+      name: "Sapphire",
+      url: "https://explorer.oasis.io/testnet/sapphire",
+    },
+  },
+  nativeCurrency: {
+    decimals: 18,
+    name: "Oasis",
+    symbol: "OASIS",
+  },
+});
+export const polygonZkEvm = defineChain({
+  id: 80002,
+  name: "Polygon zkEVM",
+  rpcUrls: {
+    default: { http: ["https://rpc-amoy.polygon.technology/"] },
+    public: { http: ["https://rpc-amoy.polygon.technology/"] },
+  },
+  blockExplorers: {
+    default: {
+      name: "PolygonScan",
+      url: "https://explorer-ui.cardona.zkevm-rpc.com/",
+    },
+  },
+  nativeCurrency: {
+    decimals: 18,
+    name: "Polygon",
+    symbol: "POL",
+  },
+});
+// not deployed - exceeds block gas limit
+export const romeTestnet = defineChain({
+  id: 200002,
+  name: "Rome Testnet",
+  rpcUrls: {
+    default: { http: ["https://rome.testnet.romeprotocol.xyz"] },
+    public: { http: ["https://rome.testnet.romeprotocol.xyz"] },
+  },
+  blockExplorers: {
+    default: {
+      name: "Rome",
+      url: "https://rome.testnet.romeprotocol.xyz:1000",
+    },
+  },
+  nativeCurrency: {
+    decimals: 18,
+    name: "Rome",
+    symbol: "ROME",
+  },
+});
+// not deployed - Error: HTTP error 400 with body: {"jsonrpc":"2.0","id":1,"error":{"code":-32602,"message":"Invalid address format: invalid hex value."}}
+export const rootstockTestnet = defineChain({
+  id: 31,
+  name: "Rootstock Testnet",
+  rpcUrls: {
+    default: { http: ["https://public-node.testnet.rsk.co"] },
+    public: { http: ["https://public-node.testnet.rsk.co"] },
+  },
+  blockExplorers: {
+    default: {
+      name: "Rootstock",
+      url: "https://rootstock-testnet.blockscout.com/",
+    },
+  },
+  nativeCurrency: {
+    decimals: 18,
+    name: "Rootstock",
+    symbol: "RSK",
+  },
+});
+export const scrollTestnet = defineChain({
+  id: 534351,
+  name: "Scroll Testnet",
+  rpcUrls: {
+    default: { http: ["https://sepolia-rpc.scroll.io/"] },
+    public: { http: ["https://sepolia-rpc.scroll.io/"] },
+  },
+  blockExplorers: {
+    default: {
+      name: "Scroll",
+      url: "https://scroll-sepolia.blockscout.com/",
+    },
+  },
+  nativeCurrency: {
+    decimals: 18,
+    name: "ETH",
+    symbol: "ETH",
+  },
+});
+export const unichain = defineChain({
+  id: 1301,
+  name: "Unichain Sepolia",
+  rpcUrls: {
+    default: { http: ["https://sepolia.unichain.org"] },
+    public: { http: ["https://sepolia.unichain.org"] },
+  },
+  blockExplorers: {
+    default: {
+      name: "Uniscan",
+      url: "https://sepolia.uniscan.xyz/",
+    },
+  },
+  nativeCurrency: {
+    decimals: 18,
+    name: "Ether",
+    symbol: "ETH",
+  },
+});
+export const zircuitTestnet = defineChain({
+  id: 48899,
+  name: "Zircuit Testnet",
+  rpcUrls: {
+    default: { http: ["https://zircuit1-testnet.p2pify.com"] },
+    public: { http: ["https://zircuit1-testnet.p2pify.com"] },
+  },
+  blockExplorers: {
+    default: {
+      name: "Zircuit Explorer",
+      url: "https://explorer.testnet.zircuit.com/",
+    },
+  },
+  nativeCurrency: {
+    decimals: 18,
+    name: "Ethereum",
+    symbol: "ETH",
   },
 });
 
 export const supportedNetworks = [
-  // morphHoleskyTestnet,
-  // hederaTestnet,
-  // skale,
-  baseSepolia,
-  // gnosis,
-  // unichain,
-  // polygonZkEvm,
-  // storyPublic,
-  // airDAO,
-  // flow,
-  // zircuitTestnet,
-  // fhenixTestnet,
+  bitKubTestnet,
+  celoTestnet,
+  chilizTestnet,
+  fhenixTestnet,
+  flow,
+  hederaTestnet,
+  incoTestnet,
+  kintoTestnet,
+  lineaTestnet,
+  mantleTestnet,
+  morphHoleskyTestnet,
+  neonTestnet,
+  oasisTestnet,
+  polygonZkEvm,
+  romeTestnet,
+  rootstockTestnet,
+  scrollTestnet,
+  unichain,
+  zircuitTestnet,
 ];
 
 // Gnosis - Mainnet
