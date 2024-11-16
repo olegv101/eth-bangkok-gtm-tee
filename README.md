@@ -1,6 +1,9 @@
 ## Getting Started
 First install and run docker desktop, make sure it is the most up to date version 4.35+ (it may error if not)
 
+Create the .env with the private key albert gives you
+`cp .env.example .env`
+
 Run the TEE Attestation Simulator:
 
 ```bash
