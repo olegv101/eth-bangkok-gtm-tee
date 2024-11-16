@@ -34,3 +34,18 @@ To make sure everything works
 - check the logs of docker, it should give some accurate tweet view count, ignore the rest
 - it should look something like this:
 https://app.warp.dev/block/pPDCeaUu2Efx454vIOxYSq
+
+--------------------------------
+## Related Necessary Repositories
+
+This repo works in conjuction with the frontend repo linked below. The smart contracts are also deployed and stored in a repo linked below.
+
+- Frontend UI: [dstack-sim-explorer](https://github.com/dstack-js/dstack-sim-explorer) - npm i && npm run dev
+- Smart Contracts: [dstack-contracts](https://github.com/dstack-js/dstack-contracts) - solidity smart contracts
+
+To run the complete system:
+
+1. First set up and run this backend service following the instructions above
+2. Clone and set up the frontend repo following its README instructions
+
+The components work together to make.

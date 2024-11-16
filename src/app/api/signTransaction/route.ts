@@ -57,7 +57,7 @@ const findMultiplier = async (data: any, keyword: string): Promise<number> => {
           content: `Return a score between 0 and 10 that corresponds to the number of times ${keyword} was mentioned in the following tweet. If there are one or more mentions, return a 1, otherwise return a number corresponding to how closely the tweet has to do with ${keyword} even though it does not specifically mention his name. Here is the tweet: ${tweetText}`,
         },
       ],
-      temperature: 1,
+      temperature: 0,
     }),
   });
 
