@@ -3,7 +3,7 @@ import "dotenv/config";
 import { privateKeyToAccount } from "viem/accounts";
 import { keccak256, http, createPublicClient, createWalletClient } from "viem";
 import superjson from "superjson";
-import { getChain } from "./chains";
+import { account, getChain } from "./chains";
 import { bountyABI, bountyAddress } from "./Bounty";
 
 const endpoint =
@@ -204,9 +204,6 @@ export async function GET(request: Request) {
     // const client = new TappdClient(endpoint);
     // const testDeriveKey = await client.deriveKey("/", "test");
     // const keccakPrivateKey = keccak256(testDeriveKey.asUint8Array());
-    const account = privateKeyToAccount(
-      "0x706a53a82bb959329274f028b19239ccc00cb040f13df41c0ce530560aae1996"
-    );
     let result = {
       derivedPublicKey: account.address,
       to: bountyAddr,
